@@ -1,4 +1,5 @@
 package edu.coursera.concurrent;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -18,11 +19,8 @@ public final class CoarseLists {
      * guidance in understanding where to place lock-based synchronization.
      */
     public static final class CoarseList extends ListSet {
-        /*
-         * TODO Declare a lock for this class to be used in implementing the
-         * concurrent add, remove, and contains methods below.
-         */
-        private ReentrantLock lock= new ReentrantLock();
+
+        private ReentrantLock lock = new ReentrantLock();
 
         /**
          * Default constructor.
@@ -34,7 +32,6 @@ public final class CoarseLists {
         /**
          * {@inheritDoc}
          *
-         * TODO Use a lock to protect against concurrent access.
          */
         @Override
         boolean add(final Integer object) {
@@ -64,7 +61,6 @@ public final class CoarseLists {
         /**
          * {@inheritDoc}
          *
-         * TODO Use a lock to protect against concurrent access.
          */
         @Override
         boolean remove(final Integer object) {
@@ -92,7 +88,6 @@ public final class CoarseLists {
         /**
          * {@inheritDoc}
          *
-         * TODO Use a lock to protect against concurrent access.
          */
         @Override
         boolean contains(final Integer object) {
@@ -124,16 +119,12 @@ public final class CoarseLists {
      * lock-based synchronization.
      */
     public static final class RWCoarseList extends ListSet {
-        /*
-         * TODO Declare a read-write lock for this class to be used in
-         * implementing the concurrent add, remove, and contains methods below.
-         */
+
         private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
 
-        private final Lock rlock = rwl.readLock();
+        private final Lock r = rwl.readLock();
 
-        private final Lock wlock = rwl.writeLock();
-
+        private final Lock w = rwl.writeLock();
         /**
          * Default constructor.
          */
@@ -144,15 +135,11 @@ public final class CoarseLists {
         /**
          * {@inheritDoc}
          *
-         * TODO Use a read-write lock to protect against concurrent access.
-         *
          */
         @Override
         boolean add(final Integer object) {
-            wlock.lock();
-
+            w.lock();
             try {
-
                 Entry pred = this.head;
                 Entry curr = pred.next;
 
@@ -170,18 +157,17 @@ public final class CoarseLists {
                     return true;
                 }
             } finally {
-                wlock.unlock();
+                w.unlock();
             }
         }
 
         /**
          * {@inheritDoc}
          *
-         * TODO Use a read-write lock to protect against concurrent access.
          */
         @Override
         boolean remove(final Integer object) {
-            wlock.lock();
+            w.lock();
             try {
                 Entry pred = this.head;
                 Entry curr = pred.next;
@@ -198,20 +184,18 @@ public final class CoarseLists {
                     return false;
                 }
             } finally {
-                wlock.unlock();
+                w.unlock();
             }
         }
 
         /**
          * {@inheritDoc}
          *
-         * TODO Use a read-write lock to protect against concurrent access.
          */
         @Override
         boolean contains(final Integer object) {
-            rlock.lock();
+            r.lock();
             try {
-
                 Entry pred = this.head;
                 Entry curr = pred.next;
 
@@ -221,7 +205,7 @@ public final class CoarseLists {
                 }
                 return object.equals(curr.object);
             } finally {
-                rlock.lock();
+                r.unlock();
             }
         }
     }
